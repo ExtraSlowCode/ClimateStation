@@ -1,2 +1,2 @@
 # ClimateStation
-A sensor project for the course Applied Internet of Things 1DT305
+**A sensor project for the course Applied Internet of Things 1DT305**
