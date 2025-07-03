@@ -48,13 +48,14 @@ Table of contents for original prototype development:
 |---|------------------------------|-----------|-------|
 |1x |Raspberry Pi Pico WH          |[Electrokit](https://www.electrokit.com/raspberry-pi-pico-wh)|99,00 SEK|
 |1x |DHT11                         |[Electrokit](https://www.electrokit.com/temp/fuktsensor-dht11)|39,00 SEK|
-|1x |MCP9700 TO-92                 |[Electrokit](https://www.electrokit.com/mcp9700-to-92-temperaturgivare)|10,50 SEK|
+|1x |MCP9700 TO-92<sup>5</sup>                |[Electrokit](https://www.electrokit.com/mcp9700-to-92-temperaturgivare)|10,50 SEK|
 |1x |Photoresistor CdS 4-7kΩ       |[Electrokit](https://www.electrokit.com/fotomotstand-cds-4-7-kohm)|9,50 SEK|
 |1x |Yellow LED 5mm diffuse 1500mcd|[Electrokit](https://www.electrokit.com/led-5mm-gul-diffus-1500mcd)|5,00 SEK (min 2)|
+|1x |Resistor 0.25W 10kΩ           |[Electrokit](https://www.electrokit.com/motstand-kolfilm-0.25w-10kohm-10k)|1,00 SEK (min 10)|
 |1x |Resistor 0.25W 330Ω           |[Electrokit](https://www.electrokit.com/motstand-kolfilm-0.25w-330ohm-330r)|1,00 SEK (min 10)|
 |1x |Breadboard                    |[Electrokit](https://www.electrokit.com/kopplingsdack-840-anslutningar)|69,00 SEK|
 |1x |Wires (bundle)                |[Electrokit](https://www.electrokit.com/labbsladd-40-pin-30cm-hane/hane)|55,00 SEK|
-|Total:|||288,00 SEK|
+|**Total:**|*(excluding some duplicates)*||**289,00 SEK**|
 
 
 ~~Table of names, where I bought them, and what they cost~~
@@ -62,17 +63,57 @@ Table of contents for original prototype development:
 ### Components
 **The Raspberry Pi Pico WH** is a MCU unit with integrated WiFi support, and pre-soldered header pins. It is highly flexible, cost-efficient, and widely used in IoT devices across the world. It is also the MCU unit that I've used the most previously, and the one included in the package of recommended hardware for this course<sup>1</sup>. In this project, I also utilize it's on-board LED, and temperature sensors. The RPI Pico W has two cores, runs using the RP2040 chip, and has 2MB flash memory<sup>2</sup>.
 
-**DHT11** is a digital temperature and humidity sensor, appreciated for it's simplicity and usability. It too was part of the recommended course hardware package, and I had 
+**DHT11** is a digital temperature and humidity sensor, appreciated for it's operability and user-friendliness. It too was part of the recommended course hardware package, and I had previous experience using it. Boasting a precision of ±1°C the DHT11 is also quite precise for its cost.
+
+**MCP9700 TO-92** is an analog alternative to the more complicated temperature sensors. Thanks to its structural simplicity it is much cheaper, but also comes with the reduced precision of "only" ±2°C in comparison with the DHT11. It also doesn't have an integrated humidity sensor, and the analog value has to be manually converted into a digital temperature reading.
+
+**A photoresistor** such as the CdS 4-7kΩ, is a resistor that varies its resistance based on the surrounding light. The current is conducted over a light-sensitive membrane, increasing the resistance with surrounding brightness. 
 
 ## Software setup
-Chosen IDE
-How to download the IDE
-How to flash the MCU
-How to upload code/testrun
+I chose to use **Thonny** as my IDE for the software part of this project, looking for simplicity. To download and set up the IDE, follow these steps.
+
+* Get the latest Thonny [download exe](https://github.com/thonny/thonny/releases/download/v4.1.7/thonny-4.1.7.exe) for your computer's operating system.
+
+* Open the .exe file, that most likely gets placed in your downloads folder.
+
+![image](./img/thonny_exe.png)
+
+* Get through the install wizard, and launch the program.
+
+* Whilst holding down the bootsel button<sup>3</sup> on the RPI Pico, connect it to your computer.
+
+* Then, install micropython on the RPI Pico, using the lower right menu. *(The text will look slightly different)*
+
+![image](./img/thonny_menu.png)
+* Choose the correct version of the micropython<sup>4</sup>. *(With the current latest version)*
+
+![link](https://static1.xdaimages.com/wordpress/wp-content/uploads/2024/12/thonny-install-micropython-dialog.jpg?q=70&fit=crop&w=825&dpr=1)
+
+* Click the stop button, and then (when the device is recognized) run the relevant file.
+
+![image](./img/thonny_start.png)
+
+
+~~Chosen IDE~~
+~~How to download the IDE~~
+~~How to flash the MCU~~
+~~How to upload code/testrun~~
 
 ## Hardware setup
-Circuit diagram
-Breadboard photo
+A diagram of the circuit *(with some components only labeled)*:
+
+![image](./img/circuit.png)
+
+Image of the board setup *(notice the on-board LED being lit while the program is running)*:
+
+![image](./img/board.jpg)
+
+The slight mess of wiring could of course be improved greatly by simply soldering the project onto a perf board, maybe along the lines of the below image, a good first step if bringing the ClimateStation into a more industiral setting.
+
+![image](./img/board_solder.png)
+
+~~Circuit diagram~~
+~~Breadboard photo~~
 Describe differences in version used in idustrial setting (soldered directly onto the MCU)
 Electrical Calculations (power consumption?, discussion on power LED resistor preference?, on photoresistor sensitivity?) (optional point)
 
@@ -123,3 +164,9 @@ Name the people writing the borrowed code. (HackMD repo owners?)
 <sup>1</sup> https://www.electrokit.com/lnu-starter
 
 <sup>2</sup> https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html
+
+<sup>3</sup> https://datasheets.raspberrypi.com/picow/PicoW-A4-Pinout.pdf
+
+<sup>4</sup> https://static1.xdaimages.com/wordpress/wp-content/uploads/2024/12/thonny-install-micropython-dialog.jpg?q=70&fit=crop&w=825&dpr=1
+
+<sup>5</sup> https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP970X-Family-Data-Sheet-DS20001942.pdf
