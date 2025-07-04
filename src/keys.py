@@ -1,0 +1,2 @@
+SSID = "name"
+PSWD = "password"
