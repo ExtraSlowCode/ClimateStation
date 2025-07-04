@@ -143,45 +143,73 @@ All of the required code is in the /src package, even the [micropython.uf2](http
 
 *Feel free to check out the code files, they are not that cumbersome.*
 
+
 ## Data transmission
-Upload frequency (and how to tweak it in the code). And why it was set as such (datacake limits, and DHT read rate)
-Data transmission type (html)
+Based primarily off of limitations set up by datacake, the current upload frequency is set to 15 minutes. This can easily be changed by modifying the sleep value in the main loop of `main.py`.
 
-The transmission steps. Call stack order ig? (measurement, html constuction, package construction, post request, deconstructor, datacake field unpacking/management) (note utilization of WiFi, what transport protocol I'm using)
+![image](./img/timer.png)
 
-The up and downsides of these choices on device range and battery use.
+Note; if using the free tier of datacake, you have maximum of 500 datapoints per day *(equivalent to a maximum upload frequency of every 2.88 minutes)*, and if displaying with the timeframe "per day", the graph precision is every 15 minutes. The DHT11 also has a maximum reading frequency of every two seconds *(which is very negligable in comparison)*. Based on all this, I found that an upload frequency of every 15 minutes would be fitting.
+
+The actual transmission is handled as follows:
+* A `WiFi` connection is established.
+* **Every 900 seconds:**
+  * `MicroPython` code on the device reads the sensors.
+  * The data is compacted into a `.json` package.
+  * The package is sent as a `HTTP` POST request.
+  * The request is transferred via `TCP` connection to datacake.
+  * Datacake deconstructs the package, and stores the values as `fields`.
+  * Datacake updates the `dashboard` with the most recent data from relevant fields. 
+  * The device sleeps the remaining time.
+
+In terms of electricity used, and device range, the big issue is my decision to use WiFi instead of something like LoRaWAN. Using WiFi is quite costly power-wise, and it limits the device range to below 100m from a router. Ideally it should be kept only indoors, and not have to rely on battery usage at all. Luckily, that is exactly what my plan and design does! It is intended to be mounted indoors, monitoring **indoor** climate, and to be connected to a power outlet. This, in combination with the comparatively long sleep the device enters between transmissions should make the device rather energy efficient for its intended use. Security-wise, the system isn't that protected, but it also isn't really considered a valuable target for any kind of attacks. Its a small, not too expensive device, presumably placed indoors, and at least for the data uploads it is using *https*, thereby guaranteeing some protection.
 
 ## Data presentation
-Screenshot of dashboard, with examples, circle zones etc
-Note the current data retention (7 days?)
-Note data update frequency, same as upload? (5mins?)
+Here in the dashboard for the project, we can see the metrics that are tracked.
+
+![image](./img/dashboard.png)
+
+Some things worthy of noting are the temperature graphs displaying all three different temperature metrics for comaparison, and the difference in precision between the daily and weekly graphs. While the daily graphs have a plot for every 15 minutes, the weekly ones only have an average value for every 2h. This made the daylight graph so imprecise that I opted for only viewing the daily version. The big jump at the beginning of the Dayligt Cycle graph can be explained by my bad sleep schedule. I stay up late, with the lights on, and when I go to sleep, the sensor quickly realizes how dark it is outside. In the morning the darkness goes away at a way more even rate, creating a beatuiful curve. It is while designing this dashboard *(choosing widgets)* that you become slightly limited by the 7 days of data retention from the free tier. Especially temperature data would have been fun to analyse on a larger timeframe.
 
 ## Final Result
-Image of final prototype, CAD and deployed?
-My thoughts on the results (went well/not)
-Things to improve
+The final version of the project, the **ClimateStation, mk .5**:
+
+![image](./img/climatestation_mk1.jpg)
+
+The measurements can be viewed over at the [dashboard](https://app.datacake.de/pd/d020b65c-bb35-4199-a751-88c524848a5a) on datacake, and will stay live-updated for a while after the completion of this project.
+
+While I am happy with the results, I see a lot of potential areas of improvements. But, as far as developing a prototype goes, I see this project as done. I haven't found any notable issues with the **mk .5**, and would likely go on to design a *mk 1.0* directly off of the current level of progress.
+
+For this potantial mk 1.0-version, I would like to do a number of things:
+* Switch over to using ELK-stack. This in order to increase the scaleability of the project, and get rid of the 7 day data retention limit, while still not having to pay any upkeep costs, since ELK-stack is open-source.
+* Fix the wiring. In its current state, the wires are to say the least, a mess. The best would probably be to solder the components into place, based off of the suggestion in [hardware setup](#hardware-setup).
+* Get a case. To protect the sensor against outside damage of all sorts, and to better it's looks as a product, I would have liked 3d-printing a case for it. This is quite a bummer that I didn't get the time to do, since I really like CAD, but designing a case would have had to be done **after** soldering the components to a perf board. And that became an issue since I didn't feel like soldering my only components that permanently together, and didn't have access to a perf board at home.
+* Fix the code a bit. I'm not super happy with the current methods, and I really feel like the network login could be handled better, maybe with a small configuration program run upon the devices' first startup?
+
+Either way, this is where I leave this project for this time. Good luck with your own projects, and thanks for reading this far!
+
 
 ## Credits & Sources
-Name the people writing the borrowed code. (HackMD repo owners?)
+<sup>1</sup>https://www.electrokit.com/lnu-starter
 
-<sup>1</sup> https://www.electrokit.com/lnu-starter
+<sup>2</sup>https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html
 
-<sup>2</sup> https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html
+<sup>3</sup>https://datasheets.raspberrypi.com/picow/PicoW-A4-Pinout.pdf
 
-<sup>3</sup> https://datasheets.raspberrypi.com/picow/PicoW-A4-Pinout.pdf
+<sup>4</sup>https://static1.xdaimages.com/wordpress/wp-content/uploads/2024/12/thonny-install-micropython-dialog.jpg?q=70&fit=crop&w=825&dpr=1
 
-<sup>4</sup> https://static1.xdaimages.com/wordpress/wp-content/uploads/2024/12/thonny-install-micropython-dialog.jpg?q=70&fit=crop&w=825&dpr=1
+<sup>5</sup>https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP970X-Family-Data-Sheet-DS20001942.pdf
 
-<sup>5</sup> https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP970X-Family-Data-Sheet-DS20001942.pdf
+<sup>6</sup>Thanks to [Antrakasus](https://github.com/Antrakasus) for help with the photoresistor sensitivity offset issue.
 
-<sup>6</sup> Thanks to [Antrakasus](https://github.com/Antrakasus) for help with the photoresistor sensitivity offset issue.
+<sup>7</sup>https://www.circuit-diagram.org/editor/
 
-<sup>7</sup> https://www.circuit-diagram.org/editor/
+<sup>8</sup>https://datacake.co/pricing
 
-<sup>8</sup> https://datacake.co/pricing
+<sup>9</sup>https://blog.golioth.io/wp-content/uploads/2022/03/datacake-integration-dashboard.png
 
-<sup>9</sup> https://blog.golioth.io/wp-content/uploads/2022/03/datacake-integration-dashboard.png
+<sup>10</sup>https://hackmd.io/q1u1hr45S-uvJCXz05aRLw
 
-<sup>10</sup> https://hackmd.io/q1u1hr45S-uvJCXz05aRLw
+<sup>11</sup>https://micropython.org/download/RPI_PICO/
 
-<sup>11</sup> https://micropython.org/download/RPI_PICO/
+*Further credits have been linked in the code comments*

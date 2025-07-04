@@ -27,7 +27,7 @@ light_level = 0
 send_led = Pin(SEND_LED_PIN, Pin.OUT)
 
 # On-Board LED
-    # https://forums.raspberrypi.com/viewtopic.php?t=336836
+    # https://forums.raspberrypi.com/viewtopic.php?t=336836#p2016234
 board_led = machine.Pin("LED", machine.Pin.OUT) 
 
 # DHT-11 sensor
@@ -218,4 +218,4 @@ while(True):
     debug_print() # optional
     sleep(3)
     # comment out below line if debugging, and upload_data() is paused. meant to not overload datacake.
-    sleep(897) # update freq in s (currently at 30min cooldown)
+    sleep(897) # update freq in s (currently at 15min cooldown)
