@@ -42,7 +42,7 @@ Table of contents for original prototype development:
 |---|------------------------------|-----------|-------|
 |1x |Raspberry Pi Pico WH          |[Electrokit](https://www.electrokit.com/raspberry-pi-pico-wh)|99,00 SEK|
 |1x |DHT11                         |[Electrokit](https://www.electrokit.com/temp/fuktsensor-dht11)|39,00 SEK|
-|1x |MCP9700 TO-92<sup>5</sup>                |[Electrokit](https://www.electrokit.com/mcp9700-to-92-temperaturgivare)|10,50 SEK|
+|1x |MCP9700 TO-92<sup>5</sup>     |[Electrokit](https://www.electrokit.com/mcp9700-to-92-temperaturgivare)|10,50 SEK|
 |1x |Photoresistor CdS 4-7kΩ       |[Electrokit](https://www.electrokit.com/fotomotstand-cds-4-7-kohm)|9,50 SEK|
 |1x |Yellow LED 5mm diffuse 1500mcd|[Electrokit](https://www.electrokit.com/led-5mm-gul-diffus-1500mcd)|5,00 SEK (min 2)|
 |1x |Resistor 0.25W 10kΩ           |[Electrokit](https://www.electrokit.com/motstand-kolfilm-0.25w-10kohm-10k)|1,00 SEK (min 10)|
@@ -85,7 +85,7 @@ I chose to use **Thonny** as my IDE for the software part of this project, looki
 * Then, install micropython on the RPI Pico, using the lower right menu. *(The text will look slightly different)*
 
 ![image](./img/thonny_menu.png)
-* Choose the correct version of the micropython<sup>4</sup>. *(The current latest version is v1.25.0)*
+* Choose the correct version of micropython<sup>4</sup>. *(The current latest version is v1.25.0)*
 
 ![link](https://static1.xdaimages.com/wordpress/wp-content/uploads/2024/12/thonny-install-micropython-dialog.jpg?q=70&fit=crop&w=825&dpr=1)
 
@@ -93,7 +93,7 @@ I chose to use **Thonny** as my IDE for the software part of this project, looki
 
 ![image](./img/thonny_start.png)
 
-* When you have a working file, save **main.py** to the RPI Pico, it has to be named that for micropython to recognize it on startup, and then simply plug the ClimateSensor into any usb power outlet. *(The WiFi-login credentials are stored in another file **keys.py** that you also have to upload to the RPI Pico before unplugging, see [Code](#code))*
+* When you have a working file, save **main.py** to the RPI Pico. It has to be named `main.py` for micropython to recognize it upon startup, and then simply plug the ClimateSensor into any usb power outlet. *(The WiFi-login credentials are stored in another file **keys.py** that you also have to upload to the RPI Pico before unplugging, see [the code](#code))*.
 
 ![image](./img/board_save.png)
 
@@ -104,7 +104,7 @@ A diagram of the circuit *(with some components only labeled)*<sup>7</sup>:
 
 ![image](./img/circuit.png)
 
-Image of the board setup *(notice the on-board LED being lit while the program is running)*:
+Image of the breadboard setup *(notice the on-board LED being lit while the program is running)*:
 
 ![image](./img/board.jpg)
 
@@ -113,27 +113,29 @@ The slight mess of wiring could of course be improved greatly by simply solderin
 ![image](./img/board_solder.png)
 
 ### Calculations
-Most sections of this project where quite straight forward, but especially the daylight sensor needed some calculations. Based on it's range (4-7kΩ), I opted for a 10kΩ resistor as comparison. This after recommendation<sup>6</sup>, lead to the photoresistor outputting a voltage range of around 0-3.2, based on the local surrounding brightness. This sensitivity range can be offset by changing the reference resistor.
+Most parts of this project were quite straight forward, but especially the daylight sensor needed some calculations. Based on it's range (4-7kΩ), I opted for a 10kΩ resistor as comparison. This after recommendation<sup>6</sup>, lead to the photoresistor outputting a voltage range of around 0-3.2, based on the local surrounding brightness. This sensitivity range can be offset by changing the reference resistor.
 
-Since the *ClimateStation* is supposed to be plugged into a power outlet, little detailed considerations on exact power consumption have been made, but it should be rather low. The program spends around 0.5 seconds measuring and transmitting data, and then 15 minutes in timer sleep. This means that the "efficient" uptime is only around 0.056%, and the remaining time spent waiting.
+Since the *ClimateStation* is supposed to be perpetually plugged into a power outlet, few considerations on exact power consumption have been made, but it should be rather low. The program spends around 0.5 seconds measuring and transmitting data, and then 15 minutes in timer sleep. This means that the "efficient" uptime is only around **0.056%**, and the remaining time spent waiting.
 
 
 ## Platform
-Firstly, I chose to explore using WiFi to directly transfer the data over the internet. This choice was quite handy, seeing as my intended placement of the *ClimateStation* was in my office-like room, right by my router. This avoided the main downside of using WiFi, the limited range. And as previously mentioned, the project is at all times connected to a power outlet, meaning the higher energy consumption that comes from communication via WiFi, will not really affect it.
+Firstly, I chose to explore using WiFi to directly transfer the data over the internet. This choice was quite handy, seeing as my intended placement of the *ClimateStation* was in my office-like room, right by my router. This avoided the main downside of using WiFi, the limited range. And as previously mentioned, the project is at all times connected to a power outlet, meaning the higher energy consumption that comes from communication via WiFi will not really affect it.
 
 Then, as a data viewing platform, I chose datacake. Mostly for its simple interface, and due to previous experience with the program. There was also quite a bit of code examples of how to interface with datacake using http, instead of the more commonly used partner within IoT spaces, LoRaWAN. Datacake has a generous free-tier<sup>8</sup> of up to 5 connected devices, and a data retention of 7 days. This is all that is needed to create a proof of concept for this project, and to have basic every-day use of the device. You can then create dashboards of your device data, that in a simple and clear way convert the data to e.g. graphs. But the greatest benefit might very well be to not have to have a server device running constantly from home, seeing as datacake is a cloud service. 
 
 *Device menu in datacake*
+
 ![image](./img/datacake_add_device.png)
 
 *A dashboard in datacake<sup>9</sup>*
+
 ![image](./img/datacake-integration-dashboard-650x363-1413818344.png)
 
 If this project was to be scaled, or simply more time invested into it, other platform compositions could be considered. The one I was most tempted by was using WiFi with a self-hosted ELK-stack<sup>10</sup>. This setup would have been way more scaleable, and given even more control to the backend owner (you). It would also have meant exploring a more complex and interesting option than datacake. By hosting the data storage server yourself, you would for example not necessarily have been limited to the 7 days of data retention, or set upload rate (500 uploads/day with free tier of datacake).
 
 
 ## Code
-**Firstly**, for the code to work, you have to fill in your WiFi networks SSID and PASSWORD in [```keys.py```](./src/keys.py). The program was constructed this way as to in a simple manner retain the network privacy.
+**Firstly**, for the code to work, you have to fill in your WiFi networks SSID and PASSWORD in [```keys.py```](./src/keys.py). The program was constructed this way as to in a simple manner retain the network privacy a little better.
 
 All of the required code is in the /src package, even the [micropython.uf2](https://micropython.org/resources/firmware/RPI_PICO-20250415-v1.25.0.uf2)-file<sup>11</sup> needed to run .py files *(most likely already installed via the Thonny IDE as per [above](#software-setup))*. So you could simply download the files [`keys.py`](./src/keys.py), [`main.py`](./src/main.py), and [`RPI_PICO-v1.25.0.uf2`](./src/RPI_PICO-v1.25.0.uf2), change the network credentials in `keys.py`, and then save them all on your RPI Pico. 
 
@@ -212,4 +214,4 @@ Either way, this is where I leave this project for this time. Good luck with you
 
 <sup>11</sup>https://micropython.org/download/RPI_PICO/
 
-*Further credits have been linked in the code comments*
+*Further credits have been linked in the code comments.*
